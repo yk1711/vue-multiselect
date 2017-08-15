@@ -9,7 +9,7 @@
     @keydown.enter.tab.stop.self="addPointerElement($event)"
     @keyup.esc="deactivate()"
     class="multiselect">
-      <slot name="caret" :toggle="toggle">
+      <slot name="caret" v-if="!alwaysOpen" :toggle="toggle">
         <div @mousedown.prevent.stop="toggle()" class="multiselect__select"></div>
       </slot>
       <slot name="clear" :search="search"></slot>
@@ -61,7 +61,7 @@
           class="multiselect__content-wrapper"
           v-show="isOpen"
           @mousedown.prevent
-          :style="{ maxHeight: optimizedHeight + 'px' }"
+          :style="{ maxHeight: optimizedHeight + 'px', position: !alwaysOpen ? 'absolute': 'static' }"
           ref="list">
           <ul class="multiselect__content" :style="contentStyle">
             <slot name="beforeList"></slot>
@@ -224,6 +224,10 @@
       tabindex: {
         type: Number,
         default: 0
+      },
+      alwaysOpen: {
+        type: Boolean,
+        default: false
       }
     },
     computed: {
