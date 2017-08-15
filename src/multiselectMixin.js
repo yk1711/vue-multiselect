@@ -287,6 +287,10 @@ export default {
     if (!this.multiple && !this.clearOnSelect) {
       console.warn('[Vue-Multiselect warn]: ClearOnSelect and Multiple props can’t be both set to false.')
     }
+
+    if (this.alwaysOpen) {
+      this.$nextTick(() => this.$refs.search.focus())
+    }
   },
   computed: {
     filteredOptions () {
@@ -332,6 +336,9 @@ export default {
         : this.internalValue[0]
           ? this.getOptionLabel(this.internalValue[0])
           : this.searchable ? '' : this.placeholder
+    },
+    shouldShow () {
+      return this.alwaysOpen ? true : this.isOpen
     }
   },
   watch: {
@@ -532,12 +539,12 @@ export default {
     /**
      * Opens the multiselect’s dropdown.
      * Sets this.isOpen to TRUE
-     */
+     */ 
     activate () {
       /* istanbul ignore else */
       if (this.isOpen || this.disabled) return
 
-      this.adjustPosition()
+      if (!this.alwaysOpen) this.adjustPosition()
       /* istanbul ignore else  */
       if (this.groupValues && this.pointer === 0 && this.filteredOptions.length) {
         this.pointer = 1
@@ -563,7 +570,7 @@ export default {
 
       this.isOpen = false
       /* istanbul ignore else  */
-      if (this.searchable) {
+      if (this.searchable && this.$refs.search) {
         this.$refs.search.blur()
       } else {
         this.$el.blur()
